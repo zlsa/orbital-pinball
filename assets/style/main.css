@@ -8,6 +8,6 @@ html,body {
 }
 
 html {
-  background: #000 url("../images/background.jpg") left top no-repeat;
+  background: #333;
   font-family: sans-serif;
 }

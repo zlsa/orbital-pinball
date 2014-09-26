@@ -8,15 +8,18 @@ var MODULES=[
   "-animation",
 //  "get",
 
+  "physics",
+  "pinball",
+
   "canvas",
-//  "load"
+
 ];
 
 // saved as prop.version and prop.version_string
-var VERSION=[0,0,0];
+var VERSION=[0,1,0];
 
 // are you using a main loop? (you must call update() afterward disable/reenable)
-var UPDATE=false;
+var UPDATE=true;
 
 // the framerate is updated this often (seconds)
 var FRAME_DELAY=1;
@@ -252,8 +255,8 @@ function update() {
     prop.time.frame.count=0;
     prop.time.frame.start=time();
   }
-  prop.time.frame.delta=Math.min(time()-prop.time.frame.last,1/20);
-  prop.time.frame.last=time();
+  prop.time.frame.delta = Math.min(time()-prop.time.frame.last, 1.0);
+  prop.time.frame.last  = time();
 }
 
 function delta() {
