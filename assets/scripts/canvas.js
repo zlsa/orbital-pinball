@@ -55,6 +55,16 @@ function canvas_draw_obstacle(cc, obstacle) {
   cc.beginPath();
   cc.arc(m(obstacle.position[0]), m(obstacle.position[1]), m(obstacle.size * 2), 0, Math.PI*2);
   cc.fill();
+
+  var alpha = crange(10, obstacle.attraction, 200, 0.05, 0.3);
+  cc.strokeStyle = "rgba(255, 255, 255, " + alpha + ")";
+  cc.lineWidth   = crange(10, obstacle.attraction, 200, 0.5, 3);
+
+  var ring = m(obstacle.size * 2) * crange(10, obstacle.attraction, 200, 1, 2.0);
+
+  cc.beginPath();
+  cc.arc(m(obstacle.position[0]), m(obstacle.position[1]), ring, 0, Math.PI*2);
+  cc.stroke();
 }
 
 function canvas_draw_obstacles(cc) {
@@ -83,10 +93,28 @@ function canvas_draw_ball(cc, ball) {
     cc.globalAlpha = 1;
   }
 
-  cc.fillStyle = "#bada55";
+  cc.fillStyle = "#000";
+
+  cc.beginPath();
+  cc.arc(m(ball.position[0]), m(ball.position[1]), m(ball.size * 2) + 1, 0, Math.PI*2);
+  cc.fill();
+
+  cc.fillStyle = "#aaa";
 
   cc.beginPath();
   cc.arc(m(ball.position[0]), m(ball.position[1]), m(ball.size * 2), 0, Math.PI*2);
+  cc.fill();
+
+  cc.fillStyle = "#444";
+
+  cc.beginPath();
+  cc.arc(m(ball.position[0]), m(ball.position[1]), m(ball.size * 1.2), 0, Math.PI*2);
+  cc.fill();
+
+  cc.fillStyle = "#d75";
+
+  cc.beginPath();
+  cc.arc(m(ball.position[0]), m(ball.position[1]), m(ball.size * 0.5), 0, Math.PI*2);
   cc.fill();
 
 }
@@ -100,8 +128,8 @@ function canvas_update_post() {
   cc.scale(1.0, -1.0);
   cc.translate(0,                          -prop.canvas.size.height / 2);
 
-  canvas_draw_obstacles(cc);
   canvas_draw_ball(cc, prop.pinball.ball);
+  canvas_draw_obstacles(cc);
 
   cc.restore();
 }
