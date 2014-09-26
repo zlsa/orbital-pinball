@@ -14,6 +14,7 @@ function canvas_init_pre() {
 }
 
 function canvas_init() {
+  canvas_add("ball");
   canvas_add("obstacles");
 }
 
@@ -78,14 +79,15 @@ function canvas_draw_ball(cc, ball) {
   cc.lineCap     = "round";
   cc.lineWidth   = 2;
 
+  cc.strokeStyle = "#38f";
+
   if(ball.path.length >= 2) {
     //    cc.moveTo(m(ball.path[0][0]), m(ball.path[0][1]));
-    var fade_start = 100;
-    var fade_end   = 200;
+    var fade_start = 200;
+    var fade_end   = 500;
     for(var i=Math.max(1, ball.path.length - fade_end);i<ball.path.length;i++) {
       cc.beginPath();
-      var alpha = crange(fade_end, Math.max(0, (ball.path.length - i)), fade_start, 0, 255);
-      cc.strokeStyle = "rgb(" + fl(alpha * 0.3) + ", " + fl(alpha * 0.6) + ", " + fl(alpha) + ")";
+      cc.lineWidth=crange(fade_end, Math.max(0, (ball.path.length - i)), 0, 0, 2);
       cc.moveTo(m(ball.path[i-1][0]), m(ball.path[i-1][1]));
       cc.lineTo(m(ball.path[i  ][0]), m(ball.path[i  ][1]));
       cc.stroke();
@@ -120,7 +122,21 @@ function canvas_draw_ball(cc, ball) {
 }
 
 function canvas_update_post() {
-  var cc=canvas_get("obstacles");
+  if(!prop.canvas.obstacles) {
+    var cc=canvas_get("obstacles");
+    cc.save();
+    canvas_clear(cc);
+
+    cc.translate(prop.canvas.size.width / 2,  prop.canvas.size.height / 2);
+    cc.scale(1.0, -1.0);
+    cc.translate(0,                          -prop.canvas.size.height / 2);
+
+    canvas_draw_obstacles(cc);
+
+    cc.restore();
+  }
+
+  var cc=canvas_get("ball");
   cc.save();
   canvas_clear(cc);
 
@@ -129,7 +145,8 @@ function canvas_update_post() {
   cc.translate(0,                          -prop.canvas.size.height / 2);
 
   canvas_draw_ball(cc, prop.pinball.ball);
-  canvas_draw_obstacles(cc);
 
   cc.restore();
+
+  prop.canvas.obstacles = true;
 }

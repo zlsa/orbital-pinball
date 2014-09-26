@@ -82,8 +82,11 @@ var Ball = Fiber.extend(function() {
       this.position[0] = this.body.position[0];
       this.position[1] = this.body.position[1];
 
-      if(this.path.length >= 1 && distance2d(this.position, this.path[this.path.length-1]) < 0.5) return;
+      if(this.path.length >= 1 && distance2d(this.position, this.path[this.path.length-1]) < 0.7) return;
       this.path.push([this.position[0], this.position[1]]);
+      if(this.path.length > 500) {
+        this.path.splice(0, this.path.length - 500);
+      }
     },
   };
 });
