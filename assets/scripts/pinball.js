@@ -14,7 +14,7 @@ var Obstacle = Fiber.extend(function() {
     },
     addPhysicsShape: function() {
       this.shape = new p2.Circle(this.size * 2);
-      prop.physics.obstacles.addShape(this.shape, this.position);
+//      prop.physics.obstacles.addShape(this.shape, this.position);
     },
     removePhysicsShape: function() {
       prop.physics.obstacles.removeShape(this.shape);
@@ -61,7 +61,7 @@ var Ball = Fiber.extend(function() {
         var pull      = (obstacle.attraction * this.mass) / (distance * distance);
 
         pull  = Math.min(100, pull);
-        if(distance < (this.size + obstacle.size) * 2 + 0.05)
+        if(distance < (this.size + obstacle.size) * 2 + 0.2)
           pull *= -50;
 
         var direction = Math.atan2((obstacle.position[0] - this.position[0]),
@@ -82,10 +82,10 @@ var Ball = Fiber.extend(function() {
       this.position[0] = this.body.position[0];
       this.position[1] = this.body.position[1];
 
-      if(this.path.length >= 1 && distance2d(this.position, this.path[this.path.length-1]) < 0.7) return;
+      if(this.path.length >= 1 && distance2d(this.position, this.path[this.path.length-1]) < 0.3) return;
       this.path.push([this.position[0], this.position[1]]);
-      if(this.path.length > 500) {
-        this.path.splice(0, this.path.length - 500);
+      if(this.path.length > prop.pinball.path_length) {
+        this.path.splice(0, this.path.length - prop.pinball.path_length);
       }
     },
   };
@@ -104,29 +104,38 @@ function pinball_init_pre() {
 
   prop.pinball.obstacles = [];
 
-  prop.pinball.speed = 0.5;
+  prop.pinball.speed = 1.0;
+
+  prop.pinball.path_length = 30;
 }
 
 function pinball_init() {
   pinball_add_obstacle(new Obstacle({
     type: "circle",
     size: 0.8,
-    position: [1, 15],
+    position: [1, 25],
     attraction: 50
   }));
 
   pinball_add_obstacle(new Obstacle({
     type: "circle",
     size: 1.5,
-    position: [5, 40],
+    position: [5, 60],
     attraction: 100
   }));
 
   pinball_add_obstacle(new Obstacle({
     type: "circle",
     size: 2,
-    position: [-30, 100],
+    position: [-10, 100],
     attraction: 150
+  }));
+
+  pinball_add_obstacle(new Obstacle({
+    type: "circle",
+    size: 1,
+    position: [-30, 80],
+    attraction: 900
   }));
 }
 

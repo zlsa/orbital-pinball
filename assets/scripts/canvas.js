@@ -51,7 +51,8 @@ function m(n) {
 }
 
 function canvas_draw_obstacle(cc, obstacle) {
-  cc.fillStyle = "#fff";
+  var alpha = crange(10, obstacle.attraction, 200, 0.5, 1);
+  cc.fillStyle = "rgba(255, 255, 255, " + alpha + ")";
 
   cc.beginPath();
   cc.arc(m(obstacle.position[0]), m(obstacle.position[1]), m(obstacle.size * 2), 0, Math.PI*2);
@@ -61,7 +62,7 @@ function canvas_draw_obstacle(cc, obstacle) {
   cc.strokeStyle = "rgba(255, 255, 255, " + alpha + ")";
   cc.lineWidth   = crange(10, obstacle.attraction, 200, 0.5, 3);
 
-  var ring = m(obstacle.size * 2) * crange(10, obstacle.attraction, 200, 1, 2.0);
+  var ring = m(obstacle.size * 2) + crange(10, obstacle.attraction, 200, 0, 20.0);
 
   cc.beginPath();
   cc.arc(m(obstacle.position[0]), m(obstacle.position[1]), ring, 0, Math.PI*2);
@@ -83,11 +84,11 @@ function canvas_draw_ball(cc, ball) {
 
   if(ball.path.length >= 2) {
     //    cc.moveTo(m(ball.path[0][0]), m(ball.path[0][1]));
-    var fade_start = 200;
-    var fade_end   = 500;
+    var fade_start = 10;
+    var fade_end   = prop.pinball.path_length;
     for(var i=Math.max(1, ball.path.length - fade_end);i<ball.path.length;i++) {
       cc.beginPath();
-      cc.lineWidth=crange(fade_end, Math.max(0, (ball.path.length - i)), 0, 0, 2);
+      cc.lineWidth=crange(fade_end, Math.max(0, (ball.path.length - i)), 0, 0, m(ball.size * 2));
       cc.moveTo(m(ball.path[i-1][0]), m(ball.path[i-1][1]));
       cc.lineTo(m(ball.path[i  ][0]), m(ball.path[i  ][1]));
       cc.stroke();

@@ -3,7 +3,7 @@ function physics_init_pre() {
   prop.physics = {};
 
   prop.physics.world = new p2.World({
-    gravity: [0, -15],
+    gravity: [0, -20],
     broadphase: new p2.SAPBroadphase()
   });
 
@@ -14,7 +14,7 @@ function physics_init_pre() {
   prop.physics.world.defaultMaterial = mat;
 
   prop.physics.world.defaultContactMaterial = new p2.ContactMaterial(mat, mat, {
-    restitution: 0.5,
+    restitution: 0.8,
   });
 
   prop.physics.obstacles = new p2.Body({
