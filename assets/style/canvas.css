@@ -20,3 +20,10 @@ canvas {
   top: 0;
   left: 0;
 }
+
+#crew-canvas {
+  top: auto;
+  left: auto;
+  right: 0;
+  bottom: 0;
+}

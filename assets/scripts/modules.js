@@ -6,7 +6,8 @@ var MODULES=[
   "-p2",
   "-util",
   "-animation",
-//  "get",
+  
+  "style",
 
   "physics",
   "pinball",

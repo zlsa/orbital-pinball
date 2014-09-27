@@ -3,11 +3,11 @@ function physics_init_pre() {
   prop.physics = {};
 
   prop.physics.world = new p2.World({
-    gravity: [0, -20],
+    gravity: [0, -30],
     broadphase: new p2.SAPBroadphase()
   });
 
-  prop.physics.steps = 2;
+  prop.physics.steps = 3;
 
   var mat = new p2.Material();
 
