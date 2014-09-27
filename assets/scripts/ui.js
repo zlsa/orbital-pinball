@@ -17,8 +17,6 @@ function ui_init() {
 
     pinball_add_ball(new Ball({
       position: [x, y],
-      mass: 300,
-      size: 0.5
     }));
   });
 }

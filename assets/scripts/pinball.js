@@ -134,8 +134,8 @@ var Ball = Fiber.extend(function() {
       if(!options) options = {};
 
       this.position = options.position || [0, 20];
-      this.size     = options.size || 0.5;
-      this.mass     = options.mass || 1.0;
+      this.size     = options.size || 1.2;
+      this.mass     = options.mass || 100;
 
       this.path     = [];
 
@@ -146,7 +146,7 @@ var Ball = Fiber.extend(function() {
         position: this.position,
         mass:     1.0,
       });
-      this.shape = new p2.Circle(this.size * 2);
+      this.shape = new p2.Circle(this.size);
       this.body.addShape(this.shape);
 
       prop.physics.world.addBody(this.body);
@@ -198,11 +198,19 @@ var Ball = Fiber.extend(function() {
     },
     update_post: function() {
 
-      this.body.position[0] = Math.max(this.body.position[0], -prop.pinball.size[0] / 2 + this.size);
-      this.body.position[0] = Math.min(this.body.position[0],  prop.pinball.size[0] / 2 - this.size);
+      if(this.body.position[0] < -prop.pinball.size[0] / 2 + this.size) {
+        this.body.position[0] = -prop.pinball.size[0] / 2 + this.size;
+        this.body.velocity[0] =  Math.abs(this.body.velocity[0]);
+      }
+      if(this.body.position[0] > prop.pinball.size[0] / 2 - this.size) {
+        this.body.position[0] =  prop.pinball.size[0] / 2 - this.size;
+        this.body.velocity[0] = -Math.abs(this.body.velocity[0]);
+      }
 
-      this.body.position[1] = Math.max(this.body.position[1], this.size);
-      this.body.position[1] = Math.min(this.body.position[1], prop.pinball.size[1] - this.size);
+      if(this.body.position[1] > prop.pinball.size[1] - this.size) {
+        this.body.position[1] =  prop.pinball.size[1] - this.size;
+        this.body.velocity[1] = -Math.abs(this.body.velocity[1]);
+      }
 
       this.position[0] = this.body.position[0];
       this.position[1] = this.body.position[1];
@@ -224,11 +232,10 @@ function pinball_init_pre() {
   prop.pinball = {};
 
   prop.pinball.size = [100, 130];
+  prop.pinball.channel = 3;
 
   prop.pinball.balls = [new Ball({
     position: [0, 65],
-    mass: 300,
-    size: 0.5
   })];
 
   prop.pinball.obstacles = [];
@@ -328,7 +335,7 @@ function pinball_init() {
     pinball_add_obstacle(new Obstacle({
       type: "circle",
       size: 2,
-      position: [i * 12, 20 + mod(i, 2) * 5],
+      position: [i * 12, 30 + mod(i, 2) * 5],
       attraction: 20
     }));
   }

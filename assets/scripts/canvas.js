@@ -86,9 +86,9 @@ function canvas_draw_obstacle(cc, obstacle) {
   cc.arc(m(obstacle.position[0]), m(obstacle.position[1]), m(obstacle.size), 0, Math.PI*2);
   cc.fill();
 
-  var alpha = crange(10, obstacle.attraction, 200, 0.05, 0.3);
+  var alpha = crange(10, obstacle.attraction, 200, 0.15, 0.3);
   cc.strokeStyle = "rgba(255, 255, 255, " + alpha + ")";
-  cc.lineWidth   = crange(10, obstacle.attraction, 200, 0.5, 3);
+  cc.lineWidth   = crange(10, obstacle.attraction, 200, 0.5, 1.0);
 
   var ring = obstacle.soi + obstacle.size;
 
@@ -112,6 +112,37 @@ function canvas_draw_obstacles(cc) {
   }
 }
 
+function canvas_draw_border(cc) {
+  cc.fillStyle="#888";
+
+  for(var i=0;i<prop.physics.corners.length;i++) {
+    var c = prop.physics.corners[i];
+
+    cc.save();
+
+    cc.beginPath();
+
+    cc.translate(m(c.offset[0]),      m(c.offset[1]));
+    cc.moveTo(   m(c.vertices[0][0]), m(c.vertices[0][1]));
+    for(var j=1;j<c.vertices.length;j++){
+      cc.lineTo(m(c.vertices[j][0]), m(c.vertices[j][1]));
+    }
+
+    cc.translate(-m(c.offset[0]), -m(c.offset[1]));
+    cc.scale(-1, 1);
+    cc.translate(m(c.offset[0]), m(c.offset[1]));
+    cc.moveTo(   m(c.vertices[0][0]), m(c.vertices[0][1]));
+    for(var j=1;j<c.vertices.length;j++){
+      cc.lineTo(m(c.vertices[j][0]), m(c.vertices[j][1]));
+    }
+
+    cc.fill();
+
+    cc.restore();
+  }
+
+}
+
 function canvas_draw_ball(cc, ball) {
   cc.lineJoin    = "round";
   cc.lineCap     = "round";
@@ -125,7 +156,7 @@ function canvas_draw_ball(cc, ball) {
     var fade_end   = prop.pinball.path_length;
     for(var i=Math.max(1, ball.path.length - fade_end);i<ball.path.length;i++) {
       cc.beginPath();
-      cc.lineWidth=crange(fade_end, Math.max(0, (ball.path.length - i)) - 1, 0, 0, m(ball.size * 2));
+      cc.lineWidth=crange(fade_end, Math.max(0, (ball.path.length - i)) - 1, 0, 0, m(ball.size));
       cc.moveTo(m(ball.path[i-1][0]), m(ball.path[i-1][1]));
       cc.lineTo(m(ball.path[i  ][0]), m(ball.path[i  ][1]));
       cc.stroke();
@@ -135,25 +166,25 @@ function canvas_draw_ball(cc, ball) {
   cc.fillStyle = "#000";
 
   cc.beginPath();
-  cc.arc(m(ball.position[0]), m(ball.position[1]), m(ball.size * 2) + 1, 0, Math.PI*2);
+  cc.arc(m(ball.position[0]), m(ball.position[1]), m(ball.size) + 1, 0, Math.PI*2);
   cc.fill();
 
   cc.fillStyle = "#aaa";
 
   cc.beginPath();
-  cc.arc(m(ball.position[0]), m(ball.position[1]), m(ball.size * 2), 0, Math.PI*2);
+  cc.arc(m(ball.position[0]), m(ball.position[1]), m(ball.size), 0, Math.PI*2);
   cc.fill();
 
   cc.fillStyle = "#444";
 
   cc.beginPath();
-  cc.arc(m(ball.position[0]), m(ball.position[1]), m(ball.size * 1.2), 0, Math.PI*2);
+  cc.arc(m(ball.position[0]), m(ball.position[1]), m(ball.size * 0.6), 0, Math.PI*2);
   cc.fill();
 
   cc.fillStyle = "#d75";
 
   cc.beginPath();
-  cc.arc(m(ball.position[0]), m(ball.position[1]), m(ball.size * 0.5), 0, Math.PI*2);
+  cc.arc(m(ball.position[0]), m(ball.position[1]), m(ball.size * 0.3), 0, Math.PI*2);
   cc.fill();
 
 }
@@ -328,6 +359,7 @@ function canvas_update_post() {
     cc.translate(0,                          -prop.canvas.size.height / 2);
 
     canvas_draw_obstacles(cc);
+    canvas_draw_border(cc);
 
     cc.restore();
   }

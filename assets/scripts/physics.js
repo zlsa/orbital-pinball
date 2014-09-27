@@ -28,6 +28,7 @@ function physics_init_pre() {
     position: [0, 0]
   });
   prop.physics.world.addBody(prop.physics.border);
+
 }
 
 function physics_init() {
@@ -36,13 +37,54 @@ function physics_init() {
   var height = prop.pinball.size[1];
 
   var border = 200;
-
+  
   prop.physics.border.addShape(new p2.Rectangle(border, height), [ (width + border) / 2, height / 2]);
   prop.physics.border.addShape(new p2.Rectangle(border, height), [-(width + border) / 2, height / 2]);
 
-  prop.physics.border.addShape(new p2.Rectangle(width + border * 2,  border), [0,                    -border / 2]);
   prop.physics.border.addShape(new p2.Rectangle(width + border * 2,  border), [0,                     height + border / 2]);
 
+  prop.physics.corners = [];
+
+  var c = {};
+  c.size   = [ width * 0.4, height * 0.2];
+  c.offset = [-width * 0.5, 0];
+  c.vertices = [
+    [prop.pinball.channel, prop.pinball.channel * 4],
+    [c.size[0], prop.pinball.channel * 3],
+    [prop.pinball.channel, c.size[1] + prop.pinball.channel * 3],
+  ];
+  prop.physics.corners.push(c);
+
+  c = {};
+  c.size   = [ width * 0.4, height * 0.2];
+  c.offset = [-width * 0.5, 0];
+  c.vertices = [
+    [0, prop.pinball.channel * 3],
+    [0, 0],
+    [c.size[0], 0],
+    [c.size[0], prop.pinball.channel * 2],
+  ];
+  prop.physics.corners.push(c);
+
+  for(var j=0;j<prop.physics.corners.length;j++) {
+    var c = prop.physics.corners[j];
+
+    var vs = [];
+
+    for(var i=0;i<c.vertices.length;i++) {
+      var v = c.vertices[i];
+      vs.push([v[0], v[1]]);
+    }
+    prop.physics.border.addShape(new p2.Convex(vs), [c.offset[0], c.offset[1]]);
+
+    vs = [];
+    for(var i=c.vertices.length-1;i>=0;i--) {
+      var v = c.vertices[i];
+      vs.push([-v[0], v[1]]);
+    }
+    prop.physics.border.addShape(new p2.Convex(vs), [-c.offset[0], c.offset[1]]);
+  }
+  
 }
 
 function physics_update() {
