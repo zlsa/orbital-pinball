@@ -7,14 +7,16 @@ function physics_init_pre() {
     broadphase: new p2.SAPBroadphase()
   });
 
-  prop.physics.steps = 4;
+  prop.physics.steps = 10;
 
   var mat = new p2.Material();
 
   prop.physics.world.defaultMaterial = mat;
+  prop.physics.world.emitImpactEvent = false;
 
   prop.physics.world.defaultContactMaterial = new p2.ContactMaterial(mat, mat, {
     restitution: 0.8,
+    relaxation: 200,
   });
 
   prop.physics.obstacles = new p2.Body({

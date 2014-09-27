@@ -158,15 +158,13 @@ var Ball = Fiber.extend(function() {
     update_pre: function() {
       var force = [0, 0];
 
-      prop.pinball.speed = 1;
-
       for(var i=0;i<prop.pinball.obstacles.length;i++) {
         var obstacle  = prop.pinball.obstacles[i]
 
         var distance  = distance2d(this.position, obstacle.position);
         var pull      = ((obstacle.attraction * this.mass) / (distance * distance)) / prop.physics.steps;
 
-        if(distance < (this.size + obstacle.size) + 0.2) {
+        if(distance < (this.size + obstacle.size) + 0.05) {
           obstacle.addHit(new Hit({
             hitter: this,
             position: obstacle.position,
@@ -185,7 +183,7 @@ var Ball = Fiber.extend(function() {
         force[1] += f[1];
 
         if(obstacle.withinSOI(this.position)) {
-//          prop.pinball.speed = 0.1;
+//          prop.pinball.speed = 0.05;
         }
       }
 
@@ -224,6 +222,73 @@ var Ball = Fiber.extend(function() {
   };
 });
 
+var Paddle = Fiber.extend(function() {
+  return {
+    init: function(side) {
+
+      this.position = [prop.pinball.size[0] * 0.1, 4.4];
+      this.side     = side;
+
+      this.angle    = 0;
+      this.angle_lowpass = new Lowpass(0.6);
+
+      this.addPhysicsBody();
+    },
+    addPhysicsBody: function() {
+      
+      var s = this.side;
+      this.verts = [];
+      var d = 1.5;
+
+      this.verts.push([prop.pinball.size[0] * 0.08, -0.0]);
+
+      for(var i=0;i<220;i+=20) {
+        this.verts.push([-Math.sin(radians(i)) * d, Math.cos(radians(i)) * d]);
+      }
+
+//      this.position[0] += d;
+      this.position[0] *= this.side;
+      
+      this.body  = new p2.Body({
+        position: this.position,
+        mass:     0.0,
+      });
+
+      this.shape = new p2.Convex(this.verts);
+      this.body.addShape(this.shape);
+
+      if(this.side == 1) this.body.angle += Math.PI;
+
+      prop.physics.world.addBody(this.body);
+
+    },
+    removePhysicsBody: function() {
+      prop.physics.world.removeBody(this.body);
+    },
+    update: function() {
+
+      var paddle = prop.ui.paddles.left;
+      if(this.side == 1) paddle = prop.ui.paddles.right;
+
+      this.angle = radians(-10);
+
+      if(paddle == 1) {
+        this.angle = radians(20);
+      }
+
+      var angle = this.angle_lowpass.filter(this.angle);
+
+      if(this.side == 1) {
+        angle = Math.PI - angle;
+      }
+
+      this.body.angle = angle;
+
+      this.angle = this.body.angle;
+    }
+  };
+});
+
 function pinball_add_ball(ball) {
   prop.pinball.balls.push(ball);
 }
@@ -240,7 +305,7 @@ function pinball_init_pre() {
 
   prop.pinball.obstacles = [];
 
-  prop.pinball.speed = 1;
+  prop.pinball.speed = 0.4;
 
   prop.pinball.path_length = 20;
 
@@ -257,6 +322,11 @@ function pinball_init_pre() {
     courage: 0.5,
     badass: 0.8
   })];
+
+  prop.pinball.paddles = {};
+
+  prop.pinball.paddles.left  = new Paddle(-1);
+  prop.pinball.paddles.right = new Paddle( 1);
 
 }
 
@@ -358,6 +428,24 @@ function pinball_update_post() {
   for(var i=0;i<prop.pinball.crew.length;i++) {
     prop.pinball.crew[i].update();
   }
+
+  for(var i in prop.pinball.paddles) {
+    prop.pinball.paddles[i].update();
+  }
+
+  var removal = [];
+  for(var i=0;i<prop.pinball.balls.length;i++) {
+    var ball = prop.pinball.balls[i];
+
+    if(ball.position[1] < -10) {
+      removal.push(i);
+    }
+  }
+    
+  for(var i=0;i<removal.length;i++) {
+    prop.pinball.balls.splice(removal[i] - i, 1);
+  }
+
 }
 
 function pinball_pupdate_pre() {

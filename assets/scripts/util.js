@@ -173,5 +173,6 @@ var Lowpass=function(mix) {
   this.filter=function(value) {
     this.target = value;
     this.tick();
+    return this.value;
   };
 };

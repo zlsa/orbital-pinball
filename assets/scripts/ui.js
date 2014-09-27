@@ -1,6 +1,11 @@
 
 function ui_init_pre() {
+  prop.ui = {};
 
+  prop.ui.paddles = {
+    left: 0,
+    right: 0
+  };
 }
 
 function ui_init() {
@@ -18,5 +23,21 @@ function ui_init() {
     pinball_add_ball(new Ball({
       position: [x, y],
     }));
+  });
+
+  $(window).keydown(function(e) {
+    if(e.which == 37) {
+      prop.ui.paddles.left = 1;
+    } else if(e.which == 39) {
+      prop.ui.paddles.right = 1;
+    }
+  });
+
+  $(window).keyup(function(e) {
+    if(e.which == 37) {
+      prop.ui.paddles.left = 0;
+    } else if(e.which == 39) {
+      prop.ui.paddles.right = 0;
+    }
   });
 }

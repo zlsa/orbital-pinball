@@ -14,8 +14,8 @@ function canvas_init_pre() {
 }
 
 function canvas_init() {
-  canvas_add("ball");
   canvas_add("obstacles");
+  canvas_add("ball");
   canvas_add("crew");
 }
 
@@ -348,6 +348,33 @@ function canvas_draw_crew(cc, crew) {
 
 }
 
+function canvas_draw_paddle(cc, paddle) {
+  cc.save();
+  cc.translate(m(paddle.position[0]), m(paddle.position[1]));
+  cc.rotate(paddle.angle);
+  cc.beginPath();
+
+  cc.moveTo(m(paddle.verts[0][0]), m(paddle.verts[0][1]));
+  for(var i=1;i<paddle.verts.length;i++) {
+    cc.lineTo(m(paddle.verts[i][0]), m(paddle.verts[i][1]));
+  }
+  cc.closePath();
+  
+  cc.strokeStyle = "#000";
+  cc.lineWidth = 2;
+  cc.stroke();
+
+  cc.fillStyle = "#bbb";
+  cc.fill();
+
+  cc.beginPath();
+  cc.fillStyle = "#d72";
+  cc.arc(0, 0, m(0.5), 0, Math.PI*2);
+  cc.fill();
+
+  cc.restore();
+}
+
 function canvas_update_post() {
   if(!prop.canvas.obstacles) {
     var cc=canvas_get("obstacles");
@@ -360,6 +387,9 @@ function canvas_update_post() {
 
     canvas_draw_obstacles(cc);
     canvas_draw_border(cc);
+
+    canvas_draw_paddle(cc, prop.pinball.paddles.left);
+    canvas_draw_paddle(cc, prop.pinball.paddles.right);
 
     cc.restore();
   }
