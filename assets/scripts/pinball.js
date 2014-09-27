@@ -305,7 +305,7 @@ function pinball_init_pre() {
 
   prop.pinball.obstacles = [];
 
-  prop.pinball.speed = 0.4;
+  prop.pinball.speed = 0.8;
 
   prop.pinball.path_length = 20;
 
