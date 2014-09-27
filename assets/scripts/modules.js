@@ -6,11 +6,14 @@ var MODULES=[
   "-p2",
   "-util",
   "-animation",
+  "-color",
   
   "style",
 
   "physics",
   "pinball",
+
+  "ui",
 
   "canvas",
 

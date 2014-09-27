@@ -68,6 +68,7 @@ function canvas_draw_hit(cc, hit, obstacle) {
   var radius = crange(0, age, hit.lifetime, m(obstacle.size * 2 + 0.0), m(obstacle.size * 6 + (hit.force * 0.001)));
 
   var alpha = crange(0, age, hit.lifetime, crange(80, hit.speed, 150, 0.1, 1.0), 0);
+  cc.fillStyle = "transparent";
   cc.fillStyle = "rgba(255, 255, 255, " + alpha + ")";
 
   cc.beginPath();
@@ -77,8 +78,9 @@ function canvas_draw_hit(cc, hit, obstacle) {
 }
 
 function canvas_draw_obstacle(cc, obstacle) {
-  var alpha = crange(10, obstacle.attraction, 200, 0.5, 1);
-  cc.fillStyle = "rgba(255, 255, 255, " + alpha + ")";
+//  var opacity = crange(10, obstacle.attraction, 200, 0.5, 0);
+//  obstacle.color.setOpacity(opacity);
+  cc.fillStyle = obstacle.color.getCssValue();
 
   cc.beginPath();
   cc.arc(m(obstacle.position[0]), m(obstacle.position[1]), m(obstacle.size), 0, Math.PI*2);
@@ -88,11 +90,19 @@ function canvas_draw_obstacle(cc, obstacle) {
   cc.strokeStyle = "rgba(255, 255, 255, " + alpha + ")";
   cc.lineWidth   = crange(10, obstacle.attraction, 200, 0.5, 3);
 
-  var ring = obstacle.soi * 2 + obstacle.size * 4;
+  var ring = obstacle.soi + obstacle.size;
 
   cc.beginPath();
-  cc.arc(m(obstacle.position[0]), m(obstacle.position[1]), ring, 0, Math.PI*2);
+  cc.arc(m(obstacle.position[0]), m(obstacle.position[1]), m(ring), 0, Math.PI*2);
   cc.stroke();
+
+  if(obstacle.parent && false) {
+    cc.strokeStyle = "rgba(64, 191, 255, 0.2)";
+    cc.beginPath();
+    cc.arc(m(obstacle.parent.position[0]), m(obstacle.parent.position[1]), m(obstacle.distance), 0, Math.PI*2);
+    cc.lineWidth=2;
+    cc.stroke();
+  }
 
 }
 
@@ -248,7 +258,7 @@ function canvas_draw_crew(cc, crew) {
 
   var ed  = prop.style.crew.head.eye.distance / 2;
   var es  = prop.style.crew.head.eye.size + crange(0, crew.fear, 1, 0, 5);
-  var eps = prop.style.crew.head.eye.pupil * crange(-1, crew.fear, 1, 2, 1);
+  var eps = prop.style.crew.head.eye.pupil * crange(-1, crew.fear, 1, 1.4, 0.8);
   var eh  = prop.style.crew.head.eye.offset;
 
   var f = crange(-1, crew.fear, 1, 1.5, 0.2);
@@ -282,24 +292,23 @@ function canvas_draw_crew(cc, crew) {
   var mouth_curve = crew.fear * prop.style.crew.mouth.fear.curve * 0.3;
 
   var mc = mouth_curve;
-  var mh = mouth_open / 2 + (Math.abs(sr(84 + seed, 1) * 3));
-  var mw = prop.style.crew.mouth.width / 2;
+  var mh = mouth_open / 2 + (Math.abs(sr(84 + seed, 1) * 5));
+  var mw = prop.style.crew.mouth.width / 2 - mh;
   var mo = prop.style.crew.mouth.offset - mc;
 
-  mh *= crange(-1, crew.fear, 0, 3, 1);
+  mh *= crange(-1, crew.fear, 0, 1.5, 1);
 
   mw *= crange(0.2, Math.abs(crew.fear), 2, 0.6, 0.9);
 
   cc.save();
   cc.translate(0, mo);
-  cc.fillStyle="#c21";
+  cc.strokeStyle="#c21";
+  cc.lineCap="round";
+  cc.lineWidth = mh;
   cc.beginPath();
-  cc.moveTo(-mw, -mh+mc);
-  cc.quadraticCurveTo(0, -mh, mw, -mh+mc);
-  cc.quadraticCurveTo(mw * 1.8, mc * 1.22, mw, mh+mc);
-  cc.quadraticCurveTo(0, mh, -mw, mh+mc);
-  cc.quadraticCurveTo(-mw * 1.8, mc * 1.22, -mw, -mh+mc);
-  cc.fill();
+  cc.moveTo(-mw, mc);
+  cc.quadraticCurveTo(0, 0, mw, mc);
+  cc.stroke();
 
   cc.restore();
   
@@ -343,6 +352,8 @@ function canvas_update_post() {
 
   cc.restore();
 
+  return;
+
   cc=canvas_get("crew");
   cc.save();
   canvas_clear(cc);
@@ -367,5 +378,5 @@ function canvas_update_post() {
 
   cc.restore();
 
-  prop.canvas.obstacles = true;
+  prop.canvas.obstacles = false;
 }

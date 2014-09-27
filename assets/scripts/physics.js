@@ -7,7 +7,7 @@ function physics_init_pre() {
     broadphase: new p2.SAPBroadphase()
   });
 
-  prop.physics.steps = 3;
+  prop.physics.steps = 4;
 
   var mat = new p2.Material();
 

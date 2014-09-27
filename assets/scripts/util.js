@@ -59,6 +59,10 @@ function randint(l,h) {
   return(Math.floor(Math.random()*(h-l+1))+l);
 }
 
+function random(l,h) {
+  return(Math.random()*(h-l)+l);
+}
+
 function equals(a, b, margin) {
   if(a - margin < b && a + margin > b) return true;
   return false;
